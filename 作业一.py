@@ -35,24 +35,26 @@ print(clf.dual_coef_)
 # solve with QP
 from cvxopt import matrix, solvers
 
-Q = np.dot(Y, Y.T) * (1 + np.dot(X, X.T)) ** 2
-Q = matrix(Q.astype(float))
+N = X.shape[0]
+# Kernel Matrix
+P = np.dot(Y, Y.T) * (1 + np.dot(X, X.T)) ** 2
+P = matrix(P.astype(float))
 
-p = matrix(- np.ones((7, 1)))
+q = matrix(- np.ones((N, 1)))
 
-a = -np.ones((7, 1))
-a = a * np.identity(7)
-a = matrix(a)
+# alpha_n >= 0 ==> - alpha <= 0
+G = - np.ones((N, 1))
+G = G * np.identity(N)
+G = matrix(G)
+h = matrix(np.zeros((N, 1)))
 
-c = matrix(np.zeros((7, 1)))
-
-# A = matrix(np.tile(Y, (1, 7)) * np.identity(7))
+# sum(y_n * alpha_n) = 0
 A = matrix(Y.T.astype(float))
 b = matrix(np.zeros((1, 1)))
 
-sol = solvers.qp(Q, p, a, c, A, b)
+sol = solvers.qp(P, q, G, h, A, b)
 
 alpha = sol['x']
 
-print(alpha)
+print(alpha, sum(alpha))
 print()
