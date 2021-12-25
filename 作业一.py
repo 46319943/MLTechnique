@@ -40,21 +40,15 @@ Q = matrix(Q.astype(float))
 
 p = matrix(- np.ones((7, 1)))
 
-a_le = Y
-a_se = -Y
-a_z = -np.ones((7, 1))
-a = np.tile(
-    np.concatenate([a_le, a_se, a_z], axis=0),
-    (1, 7)
-)
-a_i = np.concatenate([np.identity(7), np.identity(7), np.identity(7)], axis=0)
-a = a * a_i
+a = -np.ones((7, 1))
+a = a * np.identity(7)
 a = matrix(a)
 
-c = matrix(np.zeros((21, 1)))
+c = matrix(np.zeros((7, 1)))
 
-A = matrix(np.identity(7))
-b = matrix(np.zeros((7, 1)))
+# A = matrix(np.tile(Y, (1, 7)) * np.identity(7))
+A = matrix(Y.T.astype(float))
+b = matrix(np.zeros((1, 1)))
 
 sol = solvers.qp(Q, p, a, c, A, b)
 
