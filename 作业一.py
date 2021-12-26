@@ -27,10 +27,16 @@ clf = svm.SVC(
     kernel='poly',
     degree=2, coef0=1, gamma=1,
     # without Regularization. It should be linear separable
-    C=10000
+    C=1
 )
 clf.fit(X, Y)
+
+## y_n * alpha_n
 print(clf.dual_coef_)
+## SV
+print(clf.support_vectors_)
+## b
+print(clf.intercept_)
 
 # solve with QP
 from cvxopt import matrix, solvers
@@ -58,3 +64,7 @@ alpha = sol['x']
 
 print(alpha, sum(alpha))
 print()
+
+
+# weight
+# alpha * Y *
