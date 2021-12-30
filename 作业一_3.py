@@ -1,3 +1,7 @@
+'''
+solve kernel dual svm with sklearn and QP solver
+'''
+
 from sklearn import svm
 import numpy as np
 
@@ -33,6 +37,9 @@ clf.fit(X, Y)
 
 ## y_n * alpha_n
 print(clf.dual_coef_)
+## alpha_n >= 0, alpha_n = abs(dual_coef_)
+alpha_ = abs(clf.dual_coef_)
+print(alpha_, np.sum(alpha_))
 ## SV
 print(clf.support_vectors_)
 ## b
@@ -64,7 +71,6 @@ alpha = sol['x']
 
 print(alpha, sum(alpha))
 print()
-
 
 # weight
 # alpha * Y *
