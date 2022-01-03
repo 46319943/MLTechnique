@@ -34,9 +34,12 @@ def kernel_ridge_regression(lambda_=0.1, gamma=1):
     E_in = np.dot((Y_train - Y_train_hat).T, Y_train - Y_train_hat) / N
     E_out = np.dot((Y_test - Y_test_hat).T, Y_test - Y_test_hat) / X_test.shape[0]
 
-    print(E_in, E_out)
+    E_in_01 = np.average(np.sign(Y_train_hat) != Y_train)
+    E_out_01 = np.average(np.sign(Y_test_hat) != Y_test)
 
-    return E_in, E_out
+    print(E_in, E_out, E_in_01, E_out_01)
+
+    return E_in, E_out, E_in_01, E_out_01
 
 
 def kernel(x1, x2, gamma=1):
