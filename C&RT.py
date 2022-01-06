@@ -6,9 +6,10 @@ g_Ein_list = []
 
 class RandomForest:
 
-    def __init__(self, T, N_apostrophe):
+    def __init__(self, T, N_apostrophe, branch_restrict):
         self.T = T
         self.N_apostrophe = N_apostrophe
+        self.branch_restrict = branch_restrict
         self.g_list = []
 
     def fit(self, X, Y):
@@ -18,7 +19,7 @@ class RandomForest:
             sample_mask = np.random.choice(N, self.N_apostrophe)
             X_sample = X[sample_mask]
             Y_sample = Y[sample_mask]
-            g = DecisionTree('classification').fit(X_sample, Y_sample)
+            g = DecisionTree('classification', self.branch_restrict).fit(X_sample, Y_sample)
             self.g_list.append(g)
 
             g_Ein_list.append(
@@ -38,7 +39,7 @@ class RandomForest:
 class DecisionTree:
     internal_nodes_count = 0
 
-    def __init__(self, error):
+    def __init__(self, error, branch_restrict=-1):
         # 错误类型：回归、分类
         self.error = error
         # 终止条件满足时，返回常量，作为叶节点
@@ -55,13 +56,16 @@ class DecisionTree:
         self.subtree1 = None
         self.subtree2 = None
 
+        # Branch Restriction
+        self.branch_restrict = branch_restrict
+
         return
 
     def fit(self, X, Y):
         # check termination criteria
         impurity = gini_impurity(Y)
         x_unique = np.unique(X, axis=0)
-        if impurity == 0 or x_unique.shape[0] == 1:
+        if impurity == 0 or x_unique.shape[0] == 1 or self.branch_restrict == 0:
             self.constant = optimal_constant(Y, self.error)
             return self
 
@@ -72,8 +76,8 @@ class DecisionTree:
         self.Y1 = Y[D1_mask]
         self.Y2 = Y[D2_mask]
 
-        self.subtree1 = DecisionTree(self.error).fit(self.X1, self.Y1)
-        self.subtree2 = DecisionTree(self.error).fit(self.X2, self.Y2)
+        self.subtree1 = DecisionTree(self.error, self.branch_restrict - 1).fit(self.X1, self.Y1)
+        self.subtree2 = DecisionTree(self.error, self.branch_restrict - 1).fit(self.X2, self.Y2)
 
         return self
 
@@ -199,11 +203,11 @@ if __name__ == '__main__':
     # Ein = np.average(Y_hat_train != Y_train)
     # Eout = np.average(Y_hat_test != Y_test)
 
-    f = RandomForest(300, N).fit(X_train, Y_train)
+    f = RandomForest(300, N, 1).fit(X_train, Y_train)
     Y_hat_train = f(X_train)
     Y_hat_test = f(X_test)
 
-    np.average(np.sign(Y_hat_train) != Y_train)
-    np.average(np.sign(Y_hat_test) != Y_test)
+    E_in = np.average(np.sign(Y_hat_train) != Y_train)
+    E_out = np.average(np.sign(Y_hat_test) != Y_test)
 
     print()
