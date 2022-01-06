@@ -11,9 +11,8 @@ class DecisionTree:
         # 终止条件满足时，返回常量，作为叶节点
         self.constant = None
         # 学习到的分支条件
-        self.direction = None
-        self.threshold = None
         self.feature_index = None
+        self.threshold = None
         # 分支后的数据
         self.X1 = None
         self.X2 = None
@@ -34,7 +33,7 @@ class DecisionTree:
             return self
 
         self.internal_nodes_count += 1
-        self.feature_index, self.threshold, self.direction, D1_mask, D2_mask = decision_stump_branch(X, Y,
+        self.feature_index, self.threshold, D1_mask, D2_mask = decision_stump_branch(X, Y,
                                                                                                      gini_impurity)
         self.X1 = X[D1_mask]
         self.X2 = X[D2_mask]
@@ -91,24 +90,25 @@ def decision_stump_branch(X, Y, impurity_function):
         threshold_list = [(x_sorted[x_index, 0] + x_sorted[x_index + 1, 0]) / 2 for x_index in range(N - 1)]
 
         for threshold in threshold_list:
-            for direction in [-1, 1]:
-                D1_mask = X[:, [feature_index]] < threshold
-                D2_mask = X[:, [feature_index]] > threshold
+            # 在进行branching的时候，不需要考虑方向，因为会得到相同的impurity
 
-                D1_num = np.sum(D1_mask)
-                D2_num = np.sum(D2_mask)
+            D1_mask = X[:, [feature_index]] < threshold
+            D2_mask = X[:, [feature_index]] > threshold
 
-                Y1 = Y[D1_mask]
-                Y2 = Y[D2_mask]
+            D1_num = np.sum(D1_mask)
+            D2_num = np.sum(D2_mask)
 
-                impurity1 = impurity_function(Y1)
-                impurity2 = impurity_function(Y2)
+            Y1 = Y[D1_mask]
+            Y2 = Y[D2_mask]
 
-                weighted_impurity = D1_num * impurity1 + D2_num * impurity2
+            impurity1 = impurity_function(Y1)
+            impurity2 = impurity_function(Y2)
 
-                if min_impurity is None or weighted_impurity < min_impurity:
-                    min_impurity = weighted_impurity
-                    feature_threshold_direction_list.append((feature_index, threshold, direction, D1_mask, D2_mask))
+            weighted_impurity = D1_num * impurity1 + D2_num * impurity2
+
+            if min_impurity is None or weighted_impurity < min_impurity:
+                min_impurity = weighted_impurity
+                feature_threshold_direction_list.append((feature_index, threshold, D1_mask, D2_mask))
 
     return feature_threshold_direction_list[randrange(len(feature_threshold_direction_list))]
 
@@ -124,6 +124,13 @@ def gini_impurity(Y):
 
 
 def optimal_constant(Y, error):
+    '''
+    use 0/1 error for binary/multiclass classification: majority of Y
+    use squared error for regression: average of Y
+    :param Y:
+    :param error:
+    :return:
+    '''
     if error == 'regression':
         return np.mean(Y)
     elif error == 'classification':
