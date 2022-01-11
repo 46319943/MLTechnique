@@ -38,10 +38,10 @@ def backprop_stochastic(M, r, eta, T=50000):
         X2 = np.tanh(S2)
 
         delta2 = -2 * (Y_ - X2) * (1 - np.tanh(S2) ** 2)
-        delta1 = np.dot(delta2, W2.T)[:, :-1] * (1 - np.tanh(S1) ** 2)
+        delta1 = np.dot(delta2, W2.T)[:, 1:] * (1 - np.tanh(S1) ** 2)
 
-        gradient_W2 = delta2 * X1.T
         gradient_W1 = delta1 * X0.T
+        gradient_W2 = delta2 * X1.T
 
         W1 = W1 - eta * gradient_W1
         W2 = W2 - eta * gradient_W2
@@ -120,8 +120,8 @@ def backprop_stochastic_deeper(r, eta, T=50000):
         X3 = np.tanh(S3)
 
         delta3 = -2 * (Y_ - X3) * (1 - np.tanh(S3) ** 2)
-        delta2 = np.dot(delta3, W3.T)[:, :-1] * (1 - np.tanh(S2) ** 2)
-        delta1 = np.dot(delta2, W2.T)[:, :-1] * (1 - np.tanh(S1) ** 2)
+        delta2 = np.dot(delta3, W3.T)[:, 1:] * (1 - np.tanh(S2) ** 2)
+        delta1 = np.dot(delta2, W2.T)[:, 1:] * (1 - np.tanh(S1) ** 2)
 
         gradient_W1 = delta1 * X0.T
         gradient_W2 = delta2 * X1.T
@@ -167,24 +167,29 @@ def backprop_stochastic_deeper(r, eta, T=50000):
 
 
 if __name__ == '__main__':
-    # Eout1 = np.average([backprop_stochastic(1, 0.1, 0.1) for i in range(10)])
-    # Eout2 = np.average([backprop_stochastic(6, 0.1, 0.1) for i in range(10)])
-    # Eout3 = np.average([backprop_stochastic(11, 0.1, 0.1) for i in range(10)])
-    # Eout4 = np.average([backprop_stochastic(16, 0.1, 0.1) for i in range(10)])
-    # Eout5 = np.average([backprop_stochastic(21, 0.1, 0.1) for i in range(10)])
+    Eout1 = np.average([backprop_stochastic(1, 0.1, 0.1) for i in range(10)])
+    Eout2 = np.average([backprop_stochastic(6, 0.1, 0.1) for i in range(10)])
+    Eout3 = np.average([backprop_stochastic(11, 0.1, 0.1) for i in range(10)])
+    Eout4 = np.average([backprop_stochastic(16, 0.1, 0.1) for i in range(10)])
+    Eout5 = np.average([backprop_stochastic(21, 0.1, 0.1) for i in range(10)])
 
-    Eout6 = np.average([backprop_stochastic(3, 0, 0.1) for i in range(30)])
-    Eout7 = np.average([backprop_stochastic(3, 0.001, 0.1) for i in range(30)])
-    Eout8 = np.average([backprop_stochastic(3, 0.1, 0.1) for i in range(30)])
-    Eout9 = np.average([backprop_stochastic(3, 10, 0.1) for i in range(30)])
-    Eout10 = np.average([backprop_stochastic(3, 1000, 0.1) for i in range(30)])
+    E6 = [backprop_stochastic(3, 0, 0.1) for i in range(10)]
+    Eout6 = np.average(E6)
+    E7 = [backprop_stochastic(3, 0.001, 0.1) for i in range(10)]
+    Eout7 = np.average(E7)
+    E8 = [backprop_stochastic(3, 0.1, 0.1) for i in range(10)]
+    Eout8 = np.average(E8)
+    E9 = [backprop_stochastic(3, 10, 0.1) for i in range(10)]
+    Eout9 = np.average(E9)
+    E10 = [backprop_stochastic(3, 1000, 0.1) for i in range(50)]
+    Eout10 = np.average(E10)
 
-    # Eout11 = np.average([backprop_stochastic(3, 0.1, 0.001) for i in range(10)])
-    # Eout12 = np.average([backprop_stochastic(3, 0.1, 0.01) for i in range(10)])
-    # Eout13 = np.average([backprop_stochastic(3, 0.1, 0.1) for i in range(10)])
-    # Eout14 = np.average([backprop_stochastic(3, 0.1, 1) for i in range(10)])
-    # Eout15 = np.average([backprop_stochastic(3, 0.1, 10) for i in range(10)])
-    #
-    # Eout16 = np.average([backprop_stochastic_deeper(0.1, 0.01) for i in range(10)])
+    Eout11 = np.average([backprop_stochastic(3, 0.1, 0.001) for i in range(10)])
+    Eout12 = np.average([backprop_stochastic(3, 0.1, 0.01) for i in range(10)])
+    Eout13 = np.average([backprop_stochastic(3, 0.1, 0.1) for i in range(10)])
+    Eout14 = np.average([backprop_stochastic(3, 0.1, 1) for i in range(10)])
+    Eout15 = np.average([backprop_stochastic(3, 0.1, 10) for i in range(10)])
+
+    Eout16 = np.average([backprop_stochastic_deeper(0.1, 0.01) for i in range(10)])
 
     print()
