@@ -38,6 +38,7 @@ def backprop_stochastic(M, r, eta, T=50000):
         X2 = np.tanh(S2)
 
         delta2 = -2 * (Y_ - X2) * (1 - np.tanh(S2) ** 2)
+        # 去掉对x0的求导
         delta1 = np.dot(delta2, W2.T)[:, 1:] * (1 - np.tanh(S1) ** 2)
 
         gradient_W1 = delta1 * X0.T
@@ -120,6 +121,7 @@ def backprop_stochastic_deeper(r, eta, T=50000):
         X3 = np.tanh(S3)
 
         delta3 = -2 * (Y_ - X3) * (1 - np.tanh(S3) ** 2)
+        # 去掉对x0的求导
         delta2 = np.dot(delta3, W3.T)[:, 1:] * (1 - np.tanh(S2) ** 2)
         delta1 = np.dot(delta2, W2.T)[:, 1:] * (1 - np.tanh(S1) ** 2)
 
